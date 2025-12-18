@@ -13,7 +13,7 @@ enum MOTOR {
 }
 
 
-enum STATE {
+enum STATE{
     //% block="Speed"
     SPEED,
     //% block="Direction"
@@ -27,12 +27,12 @@ enum DIRECTION {
     CCW = 0X01
 }
 
-enum SENSOR {
+enum SENSOR{
     //% block="AHT20"
     AHT20,
 }
 
-enum PARA {
+enum PARA{
     //% block="Temperature"
     TEMP,
     //% block="Humidity"
@@ -40,7 +40,7 @@ enum PARA {
 
 }
 
-enum RELAY {
+enum RELAY{
     //% block="Actuation"
     CLOSE = 0x01,
     //% block="Release"
@@ -53,8 +53,8 @@ enum RELAY {
 //1e3
 //% weight=100 color=#5AAD5A icon="" block="Board"
 namespace Board {
-    let irstate: number;
-    let state: number;
+    let irstate:number;
+    let state:number;
     // ========== 常量定义（保留） ==========
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
@@ -212,8 +212,8 @@ namespace Board {
     }
 
 
-
-
+    
+    
     // I2C辅助函数
     function i2cwrite(addr: number, reg: number, value: number): void {
         const buf = pins.createBuffer(2)
@@ -221,12 +221,12 @@ namespace Board {
         buf[1] = value
         pins.i2cWriteBuffer(addr, buf)
     }
-
+    
     function i2cread(addr: number, reg: number): number {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE)
         return pins.i2cReadNumber(addr, NumberFormat.UInt8BE)
     }
-
+    
     /**
      * 控制交通灯
      */
@@ -247,7 +247,7 @@ namespace Board {
      */
     //% weight=96
     //% blockId=pinpong_readAngle block="obtain angle sensor data"
-    export function readAngle(): number {
+    export function readAngle():number{
         let value = pins.analogReadPin(AnalogReadWritePin.P2)
         return value
     }
@@ -262,12 +262,12 @@ namespace Board {
         return value
     }
 
-
+    
     /**
      * 获取超声波数据
     */
-    //%weight=93
-    //% blockId=ultrasonic_sensor block="get ultrasonic sensor (cm)"
+   //%weight=93
+   //% blockId=ultrasonic_sensor block="get ultrasonic sensor (cm)"
     export function Ultrasonic(maxCmDistance = 500): number {
         let d
         pins.digitalWritePin(DigitalPin.P16, 1);
@@ -289,23 +289,23 @@ namespace Board {
         if (x <= 0 || x > 500) {
             return 0;
         }
-        return Math.round(x);
+        return Math.round(x) ;
     }
-
+    
     /**
      * 控制继电器
      */
     //% weight=92
     //%blockId=pinpong_setRelay block="relay %state"
-    export function setRelay(state: RELAY) {
+    export function setRelay(state:RELAY){
         switch (state) {
-            case RELAY.CLOSE: setChannelLevel(2, 1); break;
-            case RELAY.DISCON: setChannelLevel(2, 0); break;
+            case RELAY.CLOSE: setChannelLevel( 2 ,  1 ); break;
+            case RELAY.DISCON: setChannelLevel( 2 , 0 ); break;
             default: break;
         }
     }
 
-
+    
     /**
     * Initialize OLED, just put the module in the module at the beginning of the code, no need to reuse
     */
@@ -335,9 +335,9 @@ namespace Board {
         OLEDcmd(0xAF);  // Set display On
         OLEDclear();
     }
+    
 
-
-
+    
     function OLEDsetText(row: number, column: number) {
         let r = row;
         let c = column;
@@ -365,27 +365,27 @@ namespace Board {
     //% line.min=0 line.max=7
     //% column.min=0 column.max=15
     //% block="OLED show text %text on line %line column %column"
-    export function OLEDshowUserText(text: string, line: number, column: number): void {
+    export function OLEDshowUserText(text: string,line: number,column:number): void {
         OLEDsetText(line, column);
-        if (text.length > 16) {
-            let newtext = text.substr(0, 16);
+        if(text.length>16){
+            let newtext = text.substr(0,16);
             for (let c of newtext)
                 OLEDputChar(c);
-        } else {
-            if (text.length > (16 - column)) {
-                let newtext = text.substr(0, (16 - column));
+        }else{
+            if(text.length>(16-column)){
+                let newtext = text.substr(0,(16-column));
                 for (let c of newtext)
                     OLEDputChar(c);
-            } else {
+            }else{
                 for (let c of text)
                     OLEDputChar(c);
             }
-
+            
         }
-
-
+        
+        
     }
-    /**
+	/**
      * @param line line num (8 pixels per line), eg: 0
      * @param n value , eg: 2019
      * OLED  shows the number
@@ -395,8 +395,8 @@ namespace Board {
     //% column.min=0 column.max=15
     //% block="OLED show number %n on line %line column %column"
 
-    export function OLEDshowUserNumber(n: number, line: number, column: number): void {
-        Board.OLEDshowUserText("" + n, line, column);
+    export function OLEDshowUserNumber(n: number,line: number, column:number): void {
+        Board.OLEDshowUserText("" + n,line, column);
     }
 
     /**
@@ -407,10 +407,10 @@ namespace Board {
     export function OLEDclear() {
         for (let j = 0; j < 8; j++) {
             OLEDsetText(j, 0);
-            for (let i = 0; i < 16; i++)  //clear all columns
-            {
-                OLEDputChar(' ');
-            }
+                for (let i=0; i < 16; i++)  //clear all columns
+                {
+                    OLEDputChar(' ');
+                }
         }
         OLEDsetText(0, 0);
     }
@@ -419,9 +419,9 @@ namespace Board {
     //% line.min=0 line.max=7
     //% column1.min=0 column1.max=15
     //% column2.min=0 column2.max=15
-    export function clear(line: number, column1: number, column2: number) {
+    export function clear(line:number,column1:number,column2:number){
         OLEDsetText(line, column1);
-        for (let i = 0; i < ((column2 - column1) + 1); i++) {
+        for (let i=0; i < ((column2-column1)+1); i++) {
             OLEDputChar(' ');
         }
     }
@@ -550,19 +550,19 @@ namespace Board {
     for (let i = 0; i < 16 * 3; i++) {
         neopixel_buf[i] = 0
     }
-    /**
-     * 红外
-     */
+   /**
+    * 红外
+    */
     //% advanced=true shim=maqueenIRV2::irCode
     function irCode(): number {
         return 0;
     }
-
+    
     //% weight=86
     //% blockId=IR_read block="read IR key value"
     export function IR_read(): number {
         pins.setPull(DigitalPin.P13, PinPullMode.PullUp)
-        return irCode() & 0x00ff;
+        return irCode()&0x00ff;
     }
 
     //% weight=85
@@ -571,24 +571,24 @@ namespace Board {
     export function IR_callbackUser(cb: (message: number) => void) {
         pins.setPull(DigitalPin.P13, PinPullMode.PullUp)
         state = 1;
-        control.onEvent(11, 22, function () {
+        control.onEvent(11, 22, function() {
             cb(irstate)
-        })
+        }) 
     }
-
+    
     basic.forever(() => {
-        if (state == 1) {
-            irstate = irCode() & 0x00ff;
-            if (irstate != -1) {
+        if(state == 1){
+            irstate = irCode()&0x00ff;
+            if(irstate != -1){
                 control.raiseEvent(11, 22)
             }
         }
-
+        
         basic.pause(20);
     })
-    /** 
-    * Set the three primary color:red, green, and blue
-    */
+     /** 
+     * Set the three primary color:red, green, and blue
+     */
     //% weight=84
     //% r.min=0 r.max=255
     //% g.min=0 g.max=255
@@ -608,8 +608,8 @@ namespace Board {
     //% from.defl=0
     //%  block="RGB LEDs |%from to|%to"
     export function ledRange(from: number, to: number): number {
-        let _from = from;
-        let _to = to + 1;
+        let _from=from;
+        let _to=to+1;
         return (_from << 16) + (2 << 8) + (_to);
     }
     /**
@@ -684,61 +684,61 @@ namespace Board {
 
     //% weight=78
     //% block="init %sensor temperature and humidity sensor"
-    export function tempHumiInit(sensor: SENSOR) {
+    export function tempHumiInit(sensor:SENSOR){
         basic.pause(30);
-        if (sensor == SENSOR.AHT20) {
+        if(sensor == SENSOR.AHT20){
             pins.i2cWriteNumber(0x38, 0xBA, NumberFormat.Int8LE);
-            let data = pins.i2cReadNumber(0x38, NumberFormat.Int8LE);
-            if ((data & 0x08) != 1) {
-                let buf = pins.createBuffer(3)
-                buf[0] = 0xBE;
-                buf[1] = 0X08;
-                buf[2] = 0x00;
+            let data=pins.i2cReadNumber(0x38, NumberFormat.Int8LE);
+            if((data & 0x08) != 1){
+            let buf=pins.createBuffer(3)
+                buf[0]=0xBE;
+                buf[1]=0X08;
+                buf[2]=0x00;
                 pins.i2cWriteBuffer(0x38, buf)
             }
         }
-
+        
     }
     /**
      * 获取温湿度数据
      */
     //% weight=77
     //% block="read %sensor %state"
-    export function readSensor(sensor: SENSOR, state: PARA): number {
+    export function readSensor(sensor:SENSOR, state:PARA): number{
         let data;
-        if (sensor == SENSOR.AHT20) {
-            let buf = pins.createBuffer(3);
-            buf[0] = 0xAC;
-            buf[1] = 0X33;
-            buf[2] = 0x00;
+        if(sensor == SENSOR.AHT20) {
+            let buf=pins.createBuffer(3);
+            buf[0]=0xAC;
+            buf[1]=0X33;
+            buf[2]=0x00;
             pins.i2cWriteBuffer(0x38, buf);
-            let buf1 = pins.i2cReadBuffer(0x38, 7);
-            switch (state) {
-                case PARA.HUM: data = ((buf1[1] << 12) + (buf1[2] << 4) + (buf1[3] >> 4)) / 1048576 * 100, 2; break;
-                case PARA.TEMP: data = (((buf1[3] & 0x0f) << 16) + (buf1[4] << 8) + (buf1[5])) / 1048576 * 200 - 50
-                    , 2; break;
-
-                default: break;
+            let buf1=pins.i2cReadBuffer(0x38, 7);
+            switch(state){
+                case PARA.HUM:data=((buf1[1] << 12) + (buf1[2] << 4) + (buf1[3] >> 4)) / 1048576 * 100, 2;break;
+                case PARA.TEMP:data=(((buf1[3] & 0x0f) << 16) + (buf1[4] << 8) + (buf1[5])) / 1048576 * 200 - 50
+                    , 2;break;
+                
+                default:break;
             }
         }
-
+        
         return Math.round(data);
     }
-
-
-
-
+    
+    
+    
+    
     /**
      * init I2C
      */
     //% block="init Board"
     //% weight=110
-    export function initBoard(): void {
+    export function initBoard():void{
         //init();
         basic.pause(30)
         // AHT20Init()
         basic.pause(30)
         initDisplay()
-
+    
     }
 }

@@ -1,14 +1,14 @@
-// 先定义全局枚举（确保MakeCode积木能识别，也可放在命名空间内，二选一）
+
 enum MOTOR {
-    //% block="M1"  // 积木下拉显示"M1"
+    //% block="M1"  
     M1 = 0x00,
-    //% block="M2"  // 积木下拉显示"M2"
+    //% block="M2"  
     M2 = 0x02,
-    //% block="M3"  // 积木下拉显示"M3"
+    //% block="M3"  
     M3 = 0x04,
-    //% block="M4"  // 积木下拉显示"M4"
+    //% block="M4"  
     M4 = 0x06,
-    //% block="ALL" // 积木下拉显示"全部"（也可保留ALL，按你需求）
+    //% block="ALL" 
     ALL = 0x08
 }
 
@@ -55,33 +55,33 @@ enum RELAY{
 namespace Board {
     let irstate:number;
     let state:number;
-    // ========== 常量定义（保留） ==========
+
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
     const MODE2 = 0x01
     const PWM_CH = 0x06
     const PRESCALE = 0xFE
 
-    // 电机通道映射 （枚举M1→索引0，M2→索引1... 一一对应）
+    
     const MOTOR_CHANNELS = [
-        [12, 11], // M1: [正转通道, 反转通道]
-        [10, 9],  // M2
-        [8, 7],   // M3
-        [4, 3]    // M4
+        [12, 11],
+        [10, 9], 
+        [8, 7], 
+        [4, 3]  
     ]
 
-    // 初始化状态
+    
     let initialized = false
 
-    // ========== 核心：枚举值转电机索引（关键适配） ==========
+
     function getMotorIndex(motor: MOTOR): number[] {
-        // 枚举值 → 电机索引（0=M1,1=M2,2=M3,3=M4）
+        
         switch (motor) {
-            case MOTOR.M1: return [0];    // M1对应索引0
-            case MOTOR.M2: return [1];    // M2对应索引1
-            case MOTOR.M3: return [2];    // M3对应索引2
-            case MOTOR.M4: return [3];    // M4对应索引3
-            case MOTOR.ALL: return [0, 1, 2, 3]; // ALL对应所有索引
+            case MOTOR.M1: return [0];   
+            case MOTOR.M2: return [1];  
+            case MOTOR.M3: return [2];
+            case MOTOR.M4: return [3];   
+            case MOTOR.ALL: return [0, 1, 2, 3];
             default: return [];
         }
     }
@@ -100,7 +100,7 @@ namespace Board {
     export function MotorRun(motor: MOTOR, dir: DIRECTION, speed: number): void {
         if (!initialized) initPCA9685()
 
-        // 获取枚举对应的电机索引
+        
         const motorIndexes = getMotorIndex(motor)
         if (motorIndexes.length === 0) return
 
@@ -111,11 +111,11 @@ namespace Board {
             const [forwardCh, reverseCh] = MOTOR_CHANNELS[idx]
 
             if (dir == DIRECTION.CW) {
-                // 正转：forward = pwm，reverse = 0
+                
                 setPwm(forwardCh, 0, pwm)
                 setPwm(reverseCh, 0, 0)
             } else {
-                // 反转：forward = 0，reverse = pwm
+                
                 setPwm(forwardCh, 0, 0)
                 setPwm(reverseCh, 0, pwm)
             }
@@ -156,12 +156,12 @@ namespace Board {
         if (!initialized) initPCA9685()
         if (channel < 0 || channel > 15) return
 
-        // 适配setPwm的0~4095限制：用100%/0%占空比实现高低电平
+        
         if (level) {
-            // 高电平：ON=0，OFF=4095（低电平占空比100%）
+            
             setPwm(channel, 0, 4096)
         } else {
-            // 低电平：ON=4095，OFF=0（低电平占空比0%）
+            
             setPwm(channel, 4096, 0)
         }
     }
@@ -171,7 +171,7 @@ namespace Board {
         i2cwrite(PCA9685_ADDRESS, MODE1, 0x00)
         setFreq(1000)
         for (let ch = 0; ch < 16; ch++) {
-            setPwm(ch, 0, 0) // 初始化所有通道为0
+            setPwm(ch, 0, 0) 
         }
         initialized = true
     }
